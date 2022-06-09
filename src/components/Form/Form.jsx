@@ -45,12 +45,16 @@ export class Form extends Component {
     let value = e.currentTarget.value;
 
     if (fieldName === 'phone') {
-      //avoid adding something except numbers to phone value
-      const lastSymbol = value[value.length - 1];
-      if (!formValidation.validPhoneSymbols.includes(lastSymbol)) return;
-
       //remove hyphens from phone number
       value = value.replaceAll('-', '');
+
+      //avoid adding something except numbers to phone value
+      const lastSymbol = value[value.length - 1];
+      if (
+        !formValidation.validPhoneSymbols.includes(lastSymbol) &&
+        !!value.length
+      )
+        return;
     }
 
     this.setFieldValue(fieldName, value);
