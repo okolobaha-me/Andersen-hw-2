@@ -46,5 +46,8 @@ export const symbolsLeft = text => {
 };
 
 export const isValidForm = values => {
-  return !values.includes('invalid');
+  for (const value of values) {
+    if (value !== 'valid') return false;
+  }
+  return true;
 };

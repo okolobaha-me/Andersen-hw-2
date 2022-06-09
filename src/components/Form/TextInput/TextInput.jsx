@@ -14,7 +14,6 @@ export const TextInput = ({
     <label className={s.filed}>
       <span className={s.filedName}>{title}</span>
       <textarea
-        required
         className={s.input}
         rows={7}
         name={name}

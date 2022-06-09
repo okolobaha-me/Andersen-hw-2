@@ -13,7 +13,7 @@ export class Form extends Component {
       lastName: '',
       birthDate: '',
       phone: '',
-      website: 'https://',
+      website: '',
       about: '',
       tech: '',
       project: '',
@@ -53,7 +53,7 @@ export class Form extends Component {
 
   validate = e => {
     const fieldName = e.currentTarget.name;
-    const value = e.currentTarget.value;
+    const value = e.currentTarget.value.trim;
 
     switch (fieldName) {
       case 'name':
@@ -112,7 +112,31 @@ export class Form extends Component {
   handleSubmit = e => {
     e.preventDefault();
     if (!formValidation.isValidForm(Object.values(this.state.validStatus))) {
-      alert('Заполните поля валидными значениями');
+      this.setState(prev => {
+        const {
+          name,
+          lastName,
+          birthDate,
+          phone,
+          website,
+          about,
+          tech,
+          project,
+        } = prev.validStatus;
+
+        return {
+          validStatus: {
+            name: name === 'notEntered' ? 'empty' : name,
+            lastName: lastName === 'notEntered' ? 'empty' : lastName,
+            birthDate: birthDate === 'notEntered' ? 'empty' : birthDate,
+            phone: phone === 'notEntered' ? 'empty' : phone,
+            website: website === 'notEntered' ? 'empty' : website,
+            about: about === 'notEntered' ? 'empty' : about,
+            tech: tech === 'notEntered' ? 'empty' : tech,
+            project: project === 'notEntered' ? 'empty' : project,
+          },
+        };
+      });
       return;
     }
 
@@ -137,7 +161,6 @@ export class Form extends Component {
               <span className={s.filedName}>Имя</span>
               <input
                 aria-invalid={true}
-                required
                 className={s.input}
                 name="name"
                 type="text"
@@ -161,7 +184,6 @@ export class Form extends Component {
             <label className={s.filed}>
               <span className={s.filedName}>Фамилия</span>
               <input
-                required
                 className={s.input}
                 name="lastName"
                 type="text"
@@ -186,7 +208,6 @@ export class Form extends Component {
           <label className={s.filed}>
             <span className={s.filedName}>Дата рождения</span>
             <input
-              required
               className={s.input}
               name="birthDate"
               type="date"
@@ -205,7 +226,6 @@ export class Form extends Component {
           <label className={s.filed}>
             <span className={s.filedName}>Телефон</span>
             <input
-              required
               className={s.input}
               name="phone"
               type="tel"
@@ -229,7 +249,6 @@ export class Form extends Component {
           <label className={s.filed}>
             <span className={s.filedName}>Сайт</span>
             <input
-              required
               className={s.input}
               name="website"
               type="url"
