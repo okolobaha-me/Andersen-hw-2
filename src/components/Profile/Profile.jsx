@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { Title } from '../Title/Title';
 import s from './Profile.module.css';
+import { maskPhone } from '../../utils/phoneMask';
 
 export const Profile = ({ data }) => {
   const { name, lastName, birthDate, phone, website, about, tech, project } =
@@ -13,7 +14,7 @@ export const Profile = ({ data }) => {
         <span className={s.fieldName}>Дата рождения: </span> {birthDate}
       </p>
       <p className={s.text}>
-        <span className={s.fieldName}>Телефон: </span> {phone}
+        <span className={s.fieldName}>Телефон: </span> {maskPhone(phone)}
       </p>
       <p className={s.text}>
         <span className={s.fieldName}>Сайт: </span> {website}
