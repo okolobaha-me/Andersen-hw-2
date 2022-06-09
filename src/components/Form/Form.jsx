@@ -1,6 +1,10 @@
 import { Component } from 'react';
 import s from './Form.module.css';
-import * as fieldValidation from '../../utils/fieldValidation';
+import * as formValidation from '../../utils/formValidation';
+import { TextInput } from './TextInput/TextInput';
+import { Title } from '../Title/Title';
+import PropTypes from 'prop-types';
+import { maskPhone } from '../../utils/phoneMask';
 
 export class Form extends Component {
   state = {
@@ -9,45 +13,110 @@ export class Form extends Component {
       lastName: '',
       birthDate: '',
       phone: '',
-      website: '',
+      website: 'https://',
       about: '',
       tech: '',
       project: '',
     },
-    isValid: {
-      name: true,
-      lastName: true,
-      birthDate: true,
-      phone: true,
-      website: true,
-      about: true,
-      tech: true,
-      project: true,
+    validStatus: {
+      name: 'notEntered',
+      lastName: 'notEntered',
+      birthDate: 'notEntered',
+      phone: 'notEntered',
+      website: 'notEntered',
+      about: 'notEntered',
+      tech: 'notEntered',
+      project: 'notEntered',
     },
-  };
-
-  handleChange = e => {
-    const fieldName = e.currentTarget.name;
-    const value = e.currentTarget.value;
-    this.setFieldValue(fieldName, value);
   };
 
   setFieldValue = (fieldName, value) => {
     this.setState(prev => ({ values: { ...prev.values, [fieldName]: value } }));
   };
 
-  onBlurValidate = e => {
+  setIsValidField = (fieldName, value) => {
+    this.setState(prev => ({
+      validStatus: { ...prev.validStatus, [fieldName]: value },
+    }));
+  };
+
+  handleChange = e => {
+    const fieldName = e.currentTarget.name;
+    const value =
+      fieldName === 'phone'
+        ? e.currentTarget.value.replaceAll('-', '')
+        : e.currentTarget.value;
+    this.setFieldValue(fieldName, value);
+
+    this.validate(e);
+  };
+
+  validate = e => {
     const fieldName = e.currentTarget.name;
     const value = e.currentTarget.value;
 
     switch (fieldName) {
       case 'name':
       case 'lastName':
-        console.log(fieldValidation.name(value));
+        this.setIsValidField(fieldName, formValidation.name(value));
         break;
+
+      case 'phone':
+        this.setIsValidField(fieldName, formValidation.phone(value));
+        break;
+
+      case 'birthDate':
+        this.setIsValidField(fieldName, formValidation.date(value));
+        break;
+
+      case 'website':
+        this.setIsValidField(fieldName, formValidation.webSite(value));
+        break;
+
+      case 'about':
+      case 'tech':
+      case 'project':
+        this.setIsValidField(fieldName, formValidation.textInput(value));
+        break;
+
       default:
         break;
     }
+  };
+
+  clearForm = () => {
+    this.setState({
+      values: {
+        name: '',
+        lastName: '',
+        birthDate: '',
+        phone: '',
+        website: 'https://',
+        about: '',
+        tech: '',
+        project: '',
+      },
+      validStatus: {
+        name: 'notEntered',
+        lastName: 'notEntered',
+        birthDate: 'notEntered',
+        phone: 'notEntered',
+        website: 'notEntered',
+        about: 'notEntered',
+        tech: 'notEntered',
+        project: 'notEntered',
+      },
+    });
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    if (!formValidation.isValidForm(Object.values(this.state.validStatus))) {
+      alert('Заполните поля валидными значениями');
+      return;
+    }
+
+    this.props.onSubmit(this.state.values);
   };
 
   render() {
@@ -55,126 +124,180 @@ export class Form extends Component {
     const { name, lastName, birthDate, phone, website, about, tech, project } =
       this.state.values;
 
+    const isValid = this.state.validStatus;
+
     return (
-      <form className={s.form}>
-        <div className={s.nameWrapper}>
+      <>
+        <Title title={'Создание анкеты'} />
+
+        <form className={s.form} onSubmit={this.handleSubmit}>
+          <div className={s.nameWrapper}>
+            {/*name input*/}
+            <label className={s.filed}>
+              <span className={s.filedName}>Имя</span>
+              <input
+                aria-invalid={true}
+                required
+                className={s.input}
+                name="name"
+                type="text"
+                id="name"
+                placeholder={'Введите имя'}
+                onChange={this.handleChange}
+                value={name}
+                onBlur={this.validate}
+              />
+              {isValid.name === 'empty' && (
+                <span className={s.error}>Это поле обязательно</span>
+              )}
+              {isValid.name === 'invalid' && (
+                <span className={s.error}>
+                  Имя должно начинаться с большой буквы
+                </span>
+              )}
+            </label>
+
+            {/*last name input*/}
+            <label className={s.filed}>
+              <span className={s.filedName}>Фамилия</span>
+              <input
+                required
+                className={s.input}
+                name="lastName"
+                type="text"
+                id="lastName"
+                placeholder={'Введите фамилию'}
+                onChange={this.handleChange}
+                value={lastName}
+                onBlur={this.validate}
+              />
+              {isValid.lastName === 'empty' && (
+                <span className={s.error}>Это поле обязательно</span>
+              )}
+              {isValid.lastName === 'invalid' && (
+                <span className={s.error}>
+                  Фамилия должна начинаться с большой буквы
+                </span>
+              )}
+            </label>
+          </div>
+
+          {/*birthdate input*/}
           <label className={s.filed}>
-            <span className={s.filedName}>Имя</span>
+            <span className={s.filedName}>Дата рождения</span>
             <input
-              aria-invalid={true}
               required
               className={s.input}
-              name="name"
-              type="text"
-              id="name"
-              placeholder={'Введите имя'}
+              name="birthDate"
+              type="date"
+              id="birthDate"
+              placeholder={'Ввыберите дату рождения'}
               onChange={this.handleChange}
-              value={name}
-              onBlur={this.onBlurValidate}
+              value={birthDate}
+              onBlur={this.validate}
             />
+            {isValid.birthDate === 'empty' && (
+              <span className={s.error}>Это поле обязательно</span>
+            )}
           </label>
+
+          {/*phone input*/}
           <label className={s.filed}>
-            <span className={s.filedName}>Фамилия</span>
+            <span className={s.filedName}>Телефон</span>
             <input
               required
               className={s.input}
-              name="lastName"
-              type="text"
-              id="lastName"
-              placeholder={'Введите фамилию'}
+              name="phone"
+              type="tel"
+              id="phone"
+              placeholder={'Укажите ваш телефон'}
               onChange={this.handleChange}
-              value={lastName}
-              onBlur={this.onBlurValidate}
+              value={maskPhone(phone)}
+              onBlur={this.validate}
             />
+            {isValid.phone === 'empty' && (
+              <span className={s.error}>Это поле обязательно</span>
+            )}
+            {isValid.phone === 'invalid' && (
+              <span className={s.error}>
+                В телефоне не может быть больше 9 цыфр
+              </span>
+            )}
           </label>
-        </div>
-        <label className={s.filed}>
-          <span className={s.filedName}>Дата рождения</span>
-          <input
-            required
-            className={s.input}
-            name="birthDate"
-            type="date"
-            id="birthDate"
-            placeholder={'Ввыберите дату рождения'}
+
+          {/*website input*/}
+          <label className={s.filed}>
+            <span className={s.filedName}>Сайт</span>
+            <input
+              required
+              className={s.input}
+              name="website"
+              type="url"
+              id="website"
+              placeholder={'Укажите ваш сайт'}
+              onChange={this.handleChange}
+              value={website}
+              onBlur={this.validate}
+            />
+            {isValid.website === 'empty' && (
+              <span className={s.error}>Это поле обязательно</span>
+            )}
+            {isValid.website === 'invalid' && (
+              <span className={s.error}>
+                Сайт должен начинаться с "https://"
+              </span>
+            )}
+          </label>
+
+          {/*about yourself input*/}
+          <TextInput
+            title={'О себе'}
+            onBlur={this.validate}
+            isValid={isValid.about}
             onChange={this.handleChange}
-            value={birthDate}
-          />
-        </label>
-        <label className={s.filed}>
-          <span className={s.filedName}>Телефон</span>
-          <input
-            required
-            className={s.input}
-            name="phone"
-            type="tel"
-            id="phone"
-            placeholder={'Укажите ваш телефон'}
-            onChange={this.handleChange}
-            value={phone}
-          />
-        </label>
-        <label className={s.filed}>
-          <span className={s.filedName}>Сайт</span>
-          <input
-            required
-            className={s.input}
-            name="website"
-            type="url"
-            id="website"
-            placeholder={'Укажите ваш сайт'}
-            onChange={this.handleChange}
-            value={website}
-          />
-        </label>
-        <label className={s.filed}>
-          <span className={s.filedName}>О себе</span>
-          <textarea
-            required
-            className={s.input}
-            rows={7}
-            name="about"
-            id="about"
-            placeholder={'Расскажите в кратце о себе'}
-            onChange={this.handleChange}
+            name={'about'}
             value={about}
           />
-        </label>
-        <label className={s.filed}>
-          <span className={s.filedName}>Стек технологий</span>
-          <textarea
-            required
-            className={s.input}
-            rows={7}
-            name="tech"
-            id="tech"
-            placeholder={'Напишите технологии с которыми вы работали'}
+
+          {/*technologies stack input*/}
+          <TextInput
+            title={'Стек технологий'}
+            onBlur={this.validate}
+            isValid={isValid.tech}
             onChange={this.handleChange}
+            name={'tech'}
             value={tech}
           />
-        </label>
-        <label className={s.filed}>
-          <span className={s.filedName}>Описание последнего проекта</span>
-          <textarea
-            required
-            className={s.input}
-            rows={7}
-            name="project"
-            id="project"
-            placeholder={'Опишите ваш последний проект'}
+
+          {/*last project input*/}
+          <TextInput
+            title={'Описание последнего проекта'}
+            onBlur={this.validate}
+            isValid={isValid.project}
             onChange={this.handleChange}
+            name={'project'}
             value={project}
           />
-        </label>
-        <div className={s.formControlWrapper}>
-          <button type="button" className={s.formControl}>
-            Отмена
-          </button>
-          <button type="submit" className={s.formControl}>
-            Сохранить
-          </button>
-        </div>
-      </form>
+
+          {/*form controls*/}
+          <div className={s.formControlWrapper}>
+            <button
+              type="button"
+              className={s.formControl}
+              onClick={this.clearForm}
+            >
+              Отмена
+            </button>
+            <button type="submit" className={s.formControl}>
+              Сохранить
+            </button>
+          </div>
+        </form>
+      </>
     );
   }
 }
+
+Form.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};

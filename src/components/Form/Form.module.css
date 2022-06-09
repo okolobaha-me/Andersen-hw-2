@@ -61,3 +61,14 @@ input:focus {
 .formControlWrapper {
   text-align: center;
 }
+
+.symbolsLeft {
+  display: inline-block;
+  margin-left: auto;
+  margin-right: 0;
+  color: #0dbd0d;
+}
+
+.error {
+  color: red;
+}
