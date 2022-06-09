@@ -53,7 +53,7 @@ export class Form extends Component {
 
   validate = e => {
     const fieldName = e.currentTarget.name;
-    const value = e.currentTarget.value.trim;
+    const value = e.currentTarget.value.trim();
 
     switch (fieldName) {
       case 'name':
