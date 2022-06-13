@@ -1,10 +1,14 @@
 import { Component } from 'react';
 import s from './Form.module.css';
 import * as formValidation from '../../utils/formValidation';
-import { TextInput } from './TextInput/TextInput';
+import { TextArea } from './TextArea/TextArea';
 import { Title } from '../Title/Title';
 import PropTypes from 'prop-types';
+import { VALIDATION_MESSAGES } from '../../utils/formValidation';
+import { Input } from './Input/Input';
 import { maskPhone } from '../../utils/phoneMask';
+
+const { NOT_ENTERED, EMPTY } = VALIDATION_MESSAGES;
 
 export class Form extends Component {
   state = {
@@ -13,20 +17,20 @@ export class Form extends Component {
       lastName: '',
       birthDate: '',
       phone: '',
-      website: '',
+      website: 'https://',
       about: '',
       tech: '',
       project: '',
     },
     validStatus: {
-      name: 'notEntered',
-      lastName: 'notEntered',
-      birthDate: 'notEntered',
-      phone: 'notEntered',
-      website: 'notEntered',
-      about: 'notEntered',
-      tech: 'notEntered',
-      project: 'notEntered',
+      name: VALIDATION_MESSAGES.NOT_ENTERED,
+      lastName: VALIDATION_MESSAGES.NOT_ENTERED,
+      birthDate: VALIDATION_MESSAGES.NOT_ENTERED,
+      phone: VALIDATION_MESSAGES.NOT_ENTERED,
+      website: VALIDATION_MESSAGES.NOT_ENTERED,
+      about: VALIDATION_MESSAGES.NOT_ENTERED,
+      tech: VALIDATION_MESSAGES.NOT_ENTERED,
+      project: VALIDATION_MESSAGES.NOT_ENTERED,
     },
   };
 
@@ -87,7 +91,7 @@ export class Form extends Component {
       case 'about':
       case 'tech':
       case 'project':
-        this.setIsValidField(fieldName, formValidation.textInput(value));
+        this.setIsValidField(fieldName, formValidation.textArea(value));
         break;
 
       default:
@@ -122,6 +126,7 @@ export class Form extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
+
     if (!formValidation.isValidForm(Object.values(this.state.validStatus))) {
       this.setState(prev => {
         const {
@@ -137,14 +142,14 @@ export class Form extends Component {
 
         return {
           validStatus: {
-            name: name === 'notEntered' ? 'empty' : name,
-            lastName: lastName === 'notEntered' ? 'empty' : lastName,
-            birthDate: birthDate === 'notEntered' ? 'empty' : birthDate,
-            phone: phone === 'notEntered' ? 'empty' : phone,
-            website: website === 'notEntered' ? 'empty' : website,
-            about: about === 'notEntered' ? 'empty' : about,
-            tech: tech === 'notEntered' ? 'empty' : tech,
-            project: project === 'notEntered' ? 'empty' : project,
+            name: name === NOT_ENTERED ? EMPTY : name,
+            lastName: lastName === NOT_ENTERED ? EMPTY : lastName,
+            birthDate: birthDate === NOT_ENTERED ? EMPTY : birthDate,
+            phone: phone === NOT_ENTERED ? EMPTY : phone,
+            website: website === NOT_ENTERED ? EMPTY : website,
+            about: about === NOT_ENTERED ? EMPTY : about,
+            tech: tech === NOT_ENTERED ? EMPTY : tech,
+            project: project === NOT_ENTERED ? EMPTY : project,
           },
         };
       });
@@ -168,119 +173,68 @@ export class Form extends Component {
         <form className={s.form} onSubmit={this.handleSubmit}>
           <div className={s.nameWrapper}>
             {/*name input*/}
-            <label className={s.filed}>
-              <span className={s.filedName}>Имя</span>
-              <input
-                aria-invalid={true}
-                className={s.input}
-                name="name"
-                type="text"
-                id="name"
-                placeholder={'Введите имя'}
-                onChange={this.handleChange}
-                value={name}
-                onBlur={this.validate}
-              />
-              {isValid.name === 'empty' && (
-                <span className={s.error}>Это поле обязательно</span>
-              )}
-              {isValid.name === 'invalid' && (
-                <span className={s.error}>
-                  Имя должно начинаться с большой буквы
-                </span>
-              )}
-            </label>
+            <Input
+              title={'Имя'}
+              fieldName={'name'}
+              type={'text'}
+              placeholder={'Введите имя'}
+              value={name}
+              onChange={this.handleChange}
+              validate={this.validate}
+              isValid={isValid.name}
+            />
 
             {/*last name input*/}
-            <label className={s.filed}>
-              <span className={s.filedName}>Фамилия</span>
-              <input
-                className={s.input}
-                name="lastName"
-                type="text"
-                id="lastName"
-                placeholder={'Введите фамилию'}
-                onChange={this.handleChange}
-                value={lastName}
-                onBlur={this.validate}
-              />
-              {isValid.lastName === 'empty' && (
-                <span className={s.error}>Это поле обязательно</span>
-              )}
-              {isValid.lastName === 'invalid' && (
-                <span className={s.error}>
-                  Фамилия должна начинаться с большой буквы
-                </span>
-              )}
-            </label>
+            <Input
+              title={'Фамилия'}
+              fieldName={'lastName'}
+              type={'text'}
+              placeholder={'Введите фамилию'}
+              value={lastName}
+              onChange={this.handleChange}
+              validate={this.validate}
+              isValid={isValid.lastName}
+            />
           </div>
 
           {/*birthdate input*/}
-          <label className={s.filed}>
-            <span className={s.filedName}>Дата рождения</span>
-            <input
-              className={s.input}
-              name="birthDate"
-              type="date"
-              id="birthDate"
-              placeholder={'Ввыберите дату рождения'}
-              onChange={this.handleChange}
-              value={birthDate}
-              onBlur={this.validate}
-            />
-            {isValid.birthDate === 'empty' && (
-              <span className={s.error}>Это поле обязательно</span>
-            )}
-          </label>
+          <Input
+            title={'Дата рождения'}
+            fieldName={'birthDate'}
+            type={'date'}
+            placeholder={'Ввыберите дату рождения'}
+            value={birthDate}
+            onChange={this.handleChange}
+            validate={this.validate}
+            isValid={isValid.birthDate}
+          />
 
           {/*phone input*/}
-          <label className={s.filed}>
-            <span className={s.filedName}>Телефон</span>
-            <input
-              className={s.input}
-              name="phone"
-              type="tel"
-              id="phone"
-              placeholder={'Укажите ваш телефон'}
-              onChange={this.handleChange}
-              value={maskPhone(phone)}
-              onBlur={this.validate}
-            />
-            {isValid.phone === 'empty' && (
-              <span className={s.error}>Это поле обязательно</span>
-            )}
-            {isValid.phone === 'invalid' && (
-              <span className={s.error}>
-                В телефоне не может быть больше 9 цыфр
-              </span>
-            )}
-          </label>
+          <Input
+            title={'Телефон'}
+            fieldName={'phone'}
+            type={'tel'}
+            placeholder={'Укажите ваш телефон'}
+            value={maskPhone(phone)}
+            onChange={this.handleChange}
+            validate={this.validate}
+            isValid={isValid.phone}
+          />
 
           {/*website input*/}
-          <label className={s.filed}>
-            <span className={s.filedName}>Сайт</span>
-            <input
-              className={s.input}
-              name="website"
-              type="url"
-              id="website"
-              placeholder={'Укажите ваш сайт'}
-              onChange={this.handleChange}
-              value={website}
-              onBlur={this.validate}
-            />
-            {isValid.website === 'empty' && (
-              <span className={s.error}>Это поле обязательно</span>
-            )}
-            {isValid.website === 'invalid' && (
-              <span className={s.error}>
-                Сайт должен начинаться с "https://"
-              </span>
-            )}
-          </label>
+          <Input
+            title={'Сайт'}
+            fieldName={'website'}
+            type={'url'}
+            placeholder={'Укажите ваш сайт'}
+            value={website}
+            onChange={this.handleChange}
+            validate={this.validate}
+            isValid={isValid.website}
+          />
 
           {/*about yourself input*/}
-          <TextInput
+          <TextArea
             title={'О себе'}
             onBlur={this.validate}
             isValid={isValid.about}
@@ -290,7 +244,7 @@ export class Form extends Component {
           />
 
           {/*technologies stack input*/}
-          <TextInput
+          <TextArea
             title={'Стек технологий'}
             onBlur={this.validate}
             isValid={isValid.tech}
@@ -300,7 +254,7 @@ export class Form extends Component {
           />
 
           {/*last project input*/}
-          <TextInput
+          <TextArea
             title={'Описание последнего проекта'}
             onBlur={this.validate}
             isValid={isValid.project}
