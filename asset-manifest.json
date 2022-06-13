@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/Andersen-hw-2/static/css/main.40013909.css",
-    "main.js": "/Andersen-hw-2/static/js/main.b8876a13.js",
+    "main.js": "/Andersen-hw-2/static/js/main.fd5c111a.js",
     "index.html": "/Andersen-hw-2/index.html",
     "main.40013909.css.map": "/Andersen-hw-2/static/css/main.40013909.css.map",
-    "main.b8876a13.js.map": "/Andersen-hw-2/static/js/main.b8876a13.js.map"
+    "main.fd5c111a.js.map": "/Andersen-hw-2/static/js/main.fd5c111a.js.map"
   },
   "entrypoints": [
     "static/css/main.40013909.css",
-    "static/js/main.b8876a13.js"
+    "static/js/main.fd5c111a.js"
   ]
 }
